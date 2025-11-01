@@ -1,0 +1,38 @@
+mutation CreateUser @auth(level: USER) {
+  user_insert(data: {
+    id_expr: "uuidV4()",
+    displayName: "New User",
+    email: "newuser@example.com",
+    createdAt_expr: "request.time"
+  })
+}
+
+query GetPublicPointsOfInterest @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  pointOfInterests {
+    id
+    name
+    latitude
+    longitude
+    category
+  }
+}
+
+mutation AddVisitedPlace($pointOfInterestId: UUID!) @auth(level: USER) {
+  visitedPlace_insert(data: {
+    userId_expr: "auth.uid",
+    pointOfInterestId: $pointOfInterestId,
+    visitDate_expr: "request.time",
+    createdAt_expr: "request.time"
+  })
+}
+
+query GetMyTrips @auth(level: USER) {
+  trips(where: {userId: {eq_expr: "auth.uid"}}) {
+    id
+    name
+    description
+    startDate
+    endDate
+    isPublic
+  }
+}

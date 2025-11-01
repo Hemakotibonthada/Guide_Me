@@ -1,0 +1,56 @@
+type User @table {
+  displayName: String!
+  email: String!
+  createdAt: Timestamp!
+  photoUrl: String
+  bio: String
+}
+
+type PointOfInterest @table {
+  name: String!
+  latitude: Float!
+  longitude: Float!
+  category: String!
+  createdAt: Timestamp!
+  description: String
+  address: String
+  openingHours: String
+  website: String
+  imageUrl: String
+}
+
+type Review @table {
+  user: User!
+  pointOfInterest: PointOfInterest!
+  rating: Int!
+  createdAt: Timestamp!
+  comment: String
+  imageUrl: String
+}
+
+type Trip @table {
+  user: User!
+  name: String!
+  startDate: Timestamp!
+  endDate: Timestamp!
+  createdAt: Timestamp!
+  description: String
+  isPublic: Boolean
+}
+
+type TripActivity @table {
+  trip: Trip!
+  pointOfInterest: PointOfInterest!
+  activityDate: Timestamp!
+  position: Int!
+  notes: String
+}
+
+type VisitedPlace @table {
+  user: User!
+  pointOfInterest: PointOfInterest!
+  visitDate: Timestamp!
+  createdAt: Timestamp!
+  notes: String
+  photoUrl: String
+}

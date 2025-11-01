@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Explore</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-searchbar
+    [(ngModel)]="searchQuery"
+    (ionInput)="searchPlaces($event)"
+    placeholder="Search destinations..."
+    animated="true">
+  </ion-searchbar>
+
+  <div *ngIf="places.length > 0" class="search-results">
+    <h2>Search Results</h2>
+    <ion-card *ngFor="let place of places" class="place-card">
+      <ion-card-header>
+        <ion-card-title>{{ place.name }}</ion-card-title>
+        <ion-card-subtitle>
+          <ion-icon name="location-outline"></ion-icon>
+          {{ place.address }}
+        </ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+  </div>
+
+  <div *ngIf="places.length === 0" class="popular-section">
+    <h2>Popular Destinations</h2>
+    <div class="destinations-grid">
+      <ion-card *ngFor="let dest of popularDestinations" class="destination-card">
+        <div class="destination-image" [style.background-image]="'url(' + dest.image + ')'"></div>
+        <ion-card-header>
+          <ion-card-title>{{ dest.name }}</ion-card-title>
+        </ion-card-header>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>

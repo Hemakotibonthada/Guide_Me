@@ -1,0 +1,114 @@
+mutation CreateSeedData @transaction @auth(level: PUBLIC, insecureReason: "This operation is for seeding data and is safe to expose to the public") {
+  user_insertMany(
+    data: [
+      {
+        id: "6b29c073-8b3f-4f35-8f7a-a9e998c694c6"
+        displayName: "Demo User 1"
+        email: "demo1@example.com"
+        createdAt: "2024-04-24T10:00:00Z"
+      }
+      {
+        id: "7e7c1b5f-d3a5-4a8b-9b8f-0a8b8e5b8d7a"
+        displayName: "Demo User 2"
+        email: "demo2@example.com"
+        createdAt: "2024-04-24T11:00:00Z"
+      }
+    ]
+  )
+  pointOfInterest_insertMany(
+    data: [
+      {
+        id: "a1b2c3d4-e5f6-4789-9abc-def012345678"
+        name: "Example Point of Interest 1"
+        category: "Restaurant"
+        latitude: 34.0522
+        longitude: -118.2437
+        createdAt: "2024-04-24T12:00:00Z"
+      }
+      {
+        id: "b9876543-21fe-4dcb-a987-fedcba098765"
+        name: "Example Point of Interest 2"
+        category: "Park"
+        latitude: 37.7749
+        longitude: -122.4194
+        createdAt: "2024-04-24T13:00:00Z"
+      }
+    ]
+  )
+  trip_insertMany(
+    data: [
+      {
+        id: "c1d2e3f4-5678-4abc-def0-9876543210fe"
+        userId: "6b29c073-8b3f-4f35-8f7a-a9e998c694c6"
+        name: "Demo Trip 1"
+        description: "Example trip for demo user 1"
+        startDate: "2024-05-01T00:00:00Z"
+        endDate: "2024-05-05T00:00:00Z"
+        createdAt: "2024-04-24T14:00:00Z"
+      }
+      {
+        id: "d9876543-fedc-4ba9-8765-43210fedcba9"
+        userId: "7e7c1b5f-d3a5-4a8b-9b8f-0a8b8e5b8d7a"
+        name: "Demo Trip 2"
+        description: "Example trip for demo user 2"
+        startDate: "2024-06-01T00:00:00Z"
+        endDate: "2024-06-10T00:00:00Z"
+        createdAt: "2024-04-24T15:00:00Z"
+      }
+    ]
+  )
+  tripActivity_insertMany(
+    data: [
+      {
+        id: "e1f2d3c4-b5a6-4897-bcde-0123456789ab"
+        tripId: "c1d2e3f4-5678-4abc-def0-9876543210fe"
+        pointOfInterestId: "a1b2c3d4-e5f6-4789-9abc-def012345678"
+        activityDate: "2024-05-02T00:00:00Z"
+        position: 1
+      }
+      {
+        id: "f8765432-edcb-4a98-ba76-9876543210fe"
+        tripId: "d9876543-fedc-4ba9-8765-43210fedcba9"
+        pointOfInterestId: "b9876543-21fe-4dcb-a987-fedcba098765"
+        activityDate: "2024-06-03T00:00:00Z"
+        position: 1
+      }
+    ]
+  )
+  visitedPlace_insertMany(
+    data: [
+      {
+        id: "01234567-89ab-cdef-0123-456789abcdef"
+        userId: "6b29c073-8b3f-4f35-8f7a-a9e998c694c6"
+        pointOfInterestId: "a1b2c3d4-e5f6-4789-9abc-def012345678"
+        visitDate: "2024-05-02T00:00:00Z"
+        createdAt: "2024-04-24T16:00:00Z"
+      }
+      {
+        id: "98765432-ba98-fedc-3210-abcdef012345"
+        userId: "7e7c1b5f-d3a5-4a8b-9b8f-0a8b8e5b8d7a"
+        pointOfInterestId: "b9876543-21fe-4dcb-a987-fedcba098765"
+        visitDate: "2024-06-03T00:00:00Z"
+        createdAt: "2024-04-24T17:00:00Z"
+      }
+    ]
+  )
+  review_insertMany(
+    data: [
+      {
+        id: "1a2b3c4d-5e6f-7890-abcd-ef1234567890"
+        userId: "6b29c073-8b3f-4f35-8f7a-a9e998c694c6"
+        pointOfInterestId: "a1b2c3d4-e5f6-4789-9abc-def012345678"
+        rating: 5
+        createdAt: "2024-04-24T18:00:00Z"
+      }
+      {
+        id: "90876543-21fed-cba9-0987-6543210fedcb"
+        userId: "7e7c1b5f-d3a5-4a8b-9b8f-0a8b8e5b8d7a"
+        pointOfInterestId: "b9876543-21fe-4dcb-a987-fedcba098765"
+        rating: 4
+        createdAt: "2024-04-24T19:00:00Z"
+      }
+    ]
+  )
+}

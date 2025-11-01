@@ -1,0 +1,70 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>My Trips</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="segment" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="upcoming">
+        <ion-label>Upcoming</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="ongoing">
+        <ion-label>Ongoing</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="completed">
+        <ion-label>Completed</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="filteredTrips.length > 0">
+    <ion-card *ngFor="let trip of filteredTrips" class="trip-card" (click)="viewTrip(trip.id)">
+      <div class="trip-image" [style.background-image]="'url(' + (trip.coverImage || 'assets/placeholder-trip.jpg') + ')'">
+        <ion-chip class="status-chip" [color]="segment === 'upcoming' ? 'primary' : segment === 'ongoing' ? 'success' : 'medium'">
+          <ion-label>{{ segment }}</ion-label>
+        </ion-chip>
+      </div>
+      <ion-card-header>
+        <ion-card-title>{{ trip.name }}</ion-card-title>
+        <ion-card-subtitle>
+          <ion-icon name="location-outline"></ion-icon>
+          {{ trip.destination }}
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="trip-info">
+          <div class="info-item">
+            <span class="label">Dates:</span>
+            <span>{{ formatDate(trip.startDate) }} - {{ formatDate(trip.endDate) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Duration:</span>
+            <span>{{ getTripDuration(trip) }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Budget:</span>
+            <span>${{ trip.budget }}</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Spent:</span>
+            <span class="expense">${{ trip.totalExpenses || 0 }}</span>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div class="empty-state" *ngIf="filteredTrips.length === 0">
+    <ion-icon name="airplane-outline"></ion-icon>
+    <h2>No {{ segment }} trips</h2>
+    <p *ngIf="segment === 'upcoming'">Start planning your next adventure!</p>
+    <ion-button *ngIf="segment === 'upcoming'" (click)="createTrip()">Create Trip</ion-button>
+  </div>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="createTrip()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

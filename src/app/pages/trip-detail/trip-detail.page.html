@@ -1,0 +1,151 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ trip?.name || 'Trip Details' }}</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="segment" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="overview">
+        <ion-label>Overview</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="places">
+        <ion-label>Places</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="expenses">
+        <ion-label>Expenses</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="photos">
+        <ion-label>Photos</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Overview Section -->
+  <div *ngIf="segment === 'overview' && trip">
+    <ion-card>
+      <div class="trip-header-image" [style.background-image]="'url(' + (trip.coverImage || 'assets/placeholder-trip.jpg') + ')'"></div>
+      <ion-card-header>
+        <ion-card-title>{{ trip.destination }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Duration:</strong> {{ formatDate(trip.startDate) }} - {{ formatDate(trip.endDate) }}</p>
+        <p><strong>Budget:</strong> ${{ trip.budget }}</p>
+        <p><strong>Spent:</strong> ${{ trip.totalExpenses || 0 }}</p>
+        <p *ngIf="trip.description">{{ trip.description }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Trip Statistics</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="stats">
+          <div class="stat-item">
+            <ion-icon name="map-outline" color="primary"></ion-icon>
+            <div>
+              <h3>{{ places.length }}</h3>
+              <p>Total Places</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="checkmark-circle" color="success"></ion-icon>
+            <div>
+              <h3>{{ getVisitedCount() }}</h3>
+              <p>Visited</p>
+            </div>
+          </div>
+          <div class="stat-item">
+            <ion-icon name="wallet-outline" color="warning"></ion-icon>
+            <div>
+              <h3>{{ expenses.length }}</h3>
+              <p>Expenses</p>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Places Section -->
+  <div *ngIf="segment === 'places'">
+    <ion-card *ngFor="let place of places" class="place-card">
+      <ion-card-header>
+        <div class="place-header">
+          <ion-card-title>{{ place.name }}</ion-card-title>
+          <ion-icon 
+            [name]="place.visited ? 'checkmark-circle' : 'ellipse-outline'"
+            [color]="place.visited ? 'success' : 'medium'"
+            class="visit-icon"
+            (click)="togglePlaceVisited(place)">
+          </ion-icon>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <p>{{ place.address }}</p>
+        <div class="place-info">
+          <ion-chip>
+            <ion-label>⭐ {{ place.rating }}/5</ion-label>
+          </ion-chip>
+          <ion-chip>
+            <ion-label>⏱ {{ place.estimatedDuration }} min</ion-label>
+          </ion-chip>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="empty-state" *ngIf="places.length === 0">
+      <ion-icon name="map-outline"></ion-icon>
+      <h2>No places added yet</h2>
+      <p>Start adding places to your trip</p>
+    </div>
+  </div>
+
+  <!-- Expenses Section -->
+  <div *ngIf="segment === 'expenses'">
+    <ion-card class="expense-summary">
+      <ion-card-content>
+        <h2>${{ trip?.totalExpenses || 0 }}</h2>
+        <p>Total Expenses</p>
+        <div class="budget-bar" *ngIf="trip">
+          <div class="spent-bar" [style.width]="(trip.totalExpenses / trip.budget * 100) + '%'"></div>
+        </div>
+        <p class="budget-text">Budget: ${{ trip?.budget }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngFor="let expense of expenses" class="expense-card">
+      <ion-card-content>
+        <div class="expense-row">
+          <div>
+            <h3>{{ expense.description }}</h3>
+            <p>{{ expense.category }}</p>
+          </div>
+          <div class="expense-amount">
+            <h3>${{ expense.amount }}</h3>
+            <p>{{ formatDate(expense.date) }}</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="empty-state" *ngIf="expenses.length === 0">
+      <ion-icon name="wallet-outline"></ion-icon>
+      <h2>No expenses recorded</h2>
+      <p>Start tracking your trip expenses</p>
+    </div>
+  </div>
+
+  <!-- Photos Section -->
+  <div *ngIf="segment === 'photos'">
+    <div class="empty-state">
+      <ion-icon name="camera-outline"></ion-icon>
+      <h2>No photos yet</h2>
+      <p>Capture and save your memories</p>
+    </div>
+  </div>
+</ion-content>

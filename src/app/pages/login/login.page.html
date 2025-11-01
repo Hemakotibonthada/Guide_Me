@@ -1,0 +1,152 @@
+<ion-content class="ion-padding login-content">
+  <div class="login-container">
+    <div class="logo-section">
+      <ion-icon name="airplane-outline" class="logo-icon"></ion-icon>
+      <h1 class="app-title">GuideMe Travel</h1>
+      <p class="app-subtitle">Your AI-Powered Travel Companion</p>
+    </div>
+
+    <ion-card class="login-card">
+      <ion-card-header>
+        <ion-card-title>{{ isSignUp ? 'Create Account' : 'Welcome Back' }}</ion-card-title>
+        <ion-card-subtitle>{{ isSignUp ? 'Start your journey today' : 'Sign in to continue' }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <!-- Error Message -->
+        <div class="error-message" *ngIf="errorMessage">
+          <ion-text color="danger">
+            <p>{{ errorMessage }}</p>
+          </ion-text>
+        </div>
+
+        <!-- Sign Up Form -->
+        <form *ngIf="isSignUp" (ngSubmit)="submitForm()">
+          <ion-item class="input-item">
+            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-input 
+              label="Full Name"
+              labelPlacement="floating"
+              type="text" 
+              [(ngModel)]="displayName"
+              name="displayName"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item class="input-item">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-input 
+              label="Email"
+              labelPlacement="floating"
+              type="email" 
+              [(ngModel)]="email"
+              name="email"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item class="input-item">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input 
+              label="Password"
+              labelPlacement="floating"
+              type="password" 
+              [(ngModel)]="password"
+              name="password"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item class="input-item">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input 
+              label="Confirm Password"
+              labelPlacement="floating"
+              type="password" 
+              [(ngModel)]="confirmPassword"
+              name="confirmPassword"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-button 
+            expand="block" 
+            type="submit"
+            class="submit-button"
+            [disabled]="isLoading">
+            <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+            <span *ngIf="!isLoading">Create Account</span>
+          </ion-button>
+        </form>
+
+        <!-- Sign In Form -->
+        <form *ngIf="!isSignUp" (ngSubmit)="submitForm()">
+          <ion-item class="input-item">
+            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-input 
+              label="Email"
+              labelPlacement="floating"
+              type="email" 
+              [(ngModel)]="email"
+              name="email"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-item class="input-item">
+            <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+            <ion-input 
+              label="Password"
+              labelPlacement="floating"
+              type="password" 
+              [(ngModel)]="password"
+              name="password"
+              required>
+            </ion-input>
+          </ion-item>
+
+          <ion-button 
+            expand="block" 
+            type="submit"
+            class="submit-button"
+            [disabled]="isLoading">
+            <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+            <span *ngIf="!isLoading">Sign In</span>
+          </ion-button>
+        </form>
+
+        <!-- Divider -->
+        <div class="divider">
+          <span>OR</span>
+        </div>
+
+        <!-- Google Sign In -->
+        <ion-button 
+          expand="block" 
+          class="google-button"
+          (click)="signInWithGoogle()"
+          [disabled]="isLoading">
+          <ion-icon slot="start" name="logo-google"></ion-icon>
+          Continue with Google
+        </ion-button>
+
+        <!-- Toggle Sign In / Sign Up -->
+        <div class="toggle-mode">
+          <ion-text color="medium">
+            <p>
+              {{ isSignUp ? 'Already have an account?' : "Don't have an account?" }}
+              <a (click)="toggleMode()" class="link">
+                {{ isSignUp ? 'Sign In' : 'Sign Up' }}
+              </a>
+            </p>
+          </ion-text>
+        </div>
+
+        <p class="terms-text">
+          By continuing, you agree to our Terms of Service and Privacy Policy
+        </p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

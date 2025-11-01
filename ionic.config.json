@@ -1,0 +1,7 @@
+{
+  "name": "guide-me-travel",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

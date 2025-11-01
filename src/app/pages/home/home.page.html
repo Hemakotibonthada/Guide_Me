@@ -1,0 +1,124 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>GuideMe Travel</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="welcome-section" *ngIf="currentUser">
+    <h1>Welcome back, {{ (currentUser.displayName || 'Traveler').split(' ')[0] }}!</h1>
+    <p>Ready for your next adventure?</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <ion-grid class="stats-grid">
+    <ion-row>
+      <ion-col size="6">
+        <ion-card class="stat-card">
+          <ion-card-content>
+            <ion-icon name="airplane-outline" color="primary"></ion-icon>
+            <h2>{{ stats.totalTrips }}</h2>
+            <p>Trips</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="stat-card">
+          <ion-card-content>
+            <ion-icon name="wallet-outline" color="success"></ion-icon>
+            <h2>${{ stats.totalExpenses.toFixed(0) }}</h2>
+            <p>Spent</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="stat-card">
+          <ion-card-content>
+            <ion-icon name="map-outline" color="warning"></ion-icon>
+            <h2>{{ stats.placesVisited }}</h2>
+            <p>Places</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+      <ion-col size="6">
+        <ion-card class="stat-card">
+          <ion-card-content>
+            <ion-icon name="camera-outline" color="danger"></ion-icon>
+            <h2>{{ stats.photosUploaded }}</h2>
+            <p>Photos</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Ongoing Trips -->
+  <div class="section" *ngIf="ongoingTrips.length > 0">
+    <div class="section-header">
+      <h2>Ongoing Trips</h2>
+    </div>
+    <ion-card *ngFor="let trip of ongoingTrips" class="trip-card ongoing" (click)="viewTrip(trip.id)">
+      <div class="trip-image" [style.background-image]="'url(' + (trip.coverImage || 'assets/placeholder-trip.jpg') + ')'">
+        <ion-chip class="status-chip" color="success">
+          <ion-label>Ongoing</ion-label>
+        </ion-chip>
+      </div>
+      <ion-card-header>
+        <ion-card-title>{{ trip.name }}</ion-card-title>
+        <ion-card-subtitle>
+          <ion-icon name="location"></ion-icon>
+          {{ trip.destination }}
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="trip-info">
+          <span>{{ formatDate(trip.startDate) }} - {{ formatDate(trip.endDate) }}</span>
+          <span class="duration">{{ getTripDuration(trip) }}</span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Upcoming Trips -->
+  <div class="section" *ngIf="upcomingTrips.length > 0">
+    <div class="section-header">
+      <h2>Upcoming Trips</h2>
+      <ion-button fill="clear" size="small" (click)="viewAllTrips()">View All</ion-button>
+    </div>
+    <ion-card *ngFor="let trip of upcomingTrips" class="trip-card" (click)="viewTrip(trip.id)">
+      <div class="trip-image" [style.background-image]="'url(' + (trip.coverImage || 'assets/placeholder-trip.jpg') + ')'">
+        <ion-chip class="status-chip" color="primary">
+          <ion-label>Upcoming</ion-label>
+        </ion-chip>
+      </div>
+      <ion-card-header>
+        <ion-card-title>{{ trip.name }}</ion-card-title>
+        <ion-card-subtitle>
+          <ion-icon name="location"></ion-icon>
+          {{ trip.destination }}
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="trip-info">
+          <span>{{ formatDate(trip.startDate) }} - {{ formatDate(trip.endDate) }}</span>
+          <span class="duration">{{ getTripDuration(trip) }}</span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="upcomingTrips.length === 0 && ongoingTrips.length === 0">
+    <ion-icon name="airplane-outline"></ion-icon>
+    <h2>No trips yet</h2>
+    <p>Start planning your next adventure!</p>
+    <ion-button (click)="createTrip()">Create Your First Trip</ion-button>
+  </div>
+
+  <!-- FAB Button -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="createTrip()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

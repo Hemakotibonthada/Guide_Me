@@ -1,0 +1,100 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Create New Trip</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Trip Name *</ion-label>
+        <ion-input 
+          [(ngModel)]="trip.name" 
+          placeholder="e.g., Summer Vacation 2025"
+          type="text">
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Destination *</ion-label>
+        <ion-input 
+          [(ngModel)]="trip.destination" 
+          placeholder="e.g., Paris, France"
+          type="text">
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Start Date</ion-label>
+        <ion-datetime 
+          [(ngModel)]="trip.startDate"
+          presentation="date">
+        </ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">End Date</ion-label>
+        <ion-datetime 
+          [(ngModel)]="trip.endDate"
+          presentation="date">
+        </ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Budget (USD)</ion-label>
+        <ion-input 
+          [(ngModel)]="trip.budget" 
+          type="number"
+          placeholder="0">
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Description</ion-label>
+        <ion-textarea 
+          [(ngModel)]="trip.description" 
+          placeholder="Tell us about your trip..."
+          rows="4">
+        </ion-textarea>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+
+  <ion-card>
+    <div class="card-header">
+      <h2>Your Interests</h2>
+      <p>Select what you're interested in</p>
+    </div>
+    <div class="interests-grid">
+      <ion-button 
+        *ngFor="let interest of interests"
+        [fill]="isInterestSelected(interest) ? 'solid' : 'outline'"
+        size="small"
+        (click)="toggleInterest(interest)">
+        {{ interest }}
+      </ion-button>
+    </div>
+  </ion-card>
+
+  <ion-button 
+    expand="block" 
+    color="secondary"
+    (click)="generateAISuggestions()"
+    [disabled]="isGeneratingAI || !trip.destination">
+    <ion-icon slot="start" name="sparkles-outline"></ion-icon>
+    {{ isGeneratingAI ? 'Generating...' : 'Generate AI Suggestions' }}
+  </ion-button>
+
+  <ion-button 
+    expand="block" 
+    color="primary"
+    (click)="saveTrip()"
+    [disabled]="isLoading">
+    <ion-icon slot="start" name="save-outline"></ion-icon>
+    {{ isLoading ? 'Creating...' : 'Create Trip' }}
+  </ion-button>
+</ion-content>

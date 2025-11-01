@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="profile-header" *ngIf="currentUser">
+    <ion-avatar class="profile-avatar">
+      <img [src]="currentUser.photoURL || 'assets/default-avatar.png'" alt="Profile">
+    </ion-avatar>
+    <h1>{{ currentUser.displayName }}</h1>
+    <p>{{ currentUser.email }}</p>
+  </div>
+
+  <ion-card>
+    <ion-card-content>
+      <ion-list>
+        <ion-item button="true">
+          <ion-icon slot="start" name="person-outline" color="primary"></ion-icon>
+          <ion-label>Edit Profile</ion-label>
+        </ion-item>
+
+        <ion-item button="true">
+          <ion-icon slot="start" name="settings-outline" color="primary"></ion-icon>
+          <ion-label>Settings</ion-label>
+        </ion-item>
+
+        <ion-item button="true">
+          <ion-icon slot="start" name="help-circle-outline" color="primary"></ion-icon>
+          <ion-label>Help & Support</ion-label>
+        </ion-item>
+
+        <ion-item button="true" (click)="signOut()">
+          <ion-icon slot="start" name="log-out-outline" color="danger"></ion-icon>
+          <ion-label color="danger">Sign Out</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <div class="app-info">
+    <p>GuideMe Travel v1.0.0</p>
+    <p>© 2025 All rights reserved</p>
+  </div>
+</ion-content>
