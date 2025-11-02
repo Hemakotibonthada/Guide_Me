@@ -96,7 +96,7 @@ export class LoginPage {
     this.errorMessage = '';
     try {
       await this.authService.signInWithGoogle();
-      this.router.navigate(['/home']);
+      this.router.navigate(['/tabs/home']);
     } catch (error: any) {
       console.error('Google sign-in error:', error);
       this.errorMessage = error.message || 'Failed to sign in with Google.';
@@ -113,7 +113,7 @@ export class LoginPage {
     
     try {
       await this.authService.signInWithEmail(this.email, this.password);
-      this.router.navigate(['/home']);
+      this.router.navigate(['/tabs/home']);
     } catch (error: any) {
       console.error('Sign-in error:', error);
       this.errorMessage = error.message || 'Failed to sign in.';
@@ -130,7 +130,7 @@ export class LoginPage {
     
     try {
       await this.authService.signUpWithEmail(this.email, this.password, this.displayName);
-      this.router.navigate(['/home']);
+      this.router.navigate(['/tabs/home']);
     } catch (error: any) {
       console.error('Sign-up error:', error);
       this.errorMessage = error.message || 'Failed to create account.';

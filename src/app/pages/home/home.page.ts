@@ -100,7 +100,7 @@ export class HomePage implements OnInit {
   }
 
   viewAllTrips() {
-    this.router.navigate(['/my-trips']);
+    this.router.navigate(['/tabs/my-trips']);
   }
 
   formatDate(date: Date): string {
