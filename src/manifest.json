@@ -1,8 +1,8 @@
 {
   "name": "GuideMe Travel",
   "short_name": "GuideMe",
-  "theme_color": "#5260ff",
-  "background_color": "#ffffff",
+  "theme_color": "#4F46E5",
+  "background_color": "#F9FAFB",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
