@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonRouterOutlet } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { homeOutline, mapOutline, listOutline, personOutline } from 'ionicons/icons';
 
@@ -8,7 +9,7 @@ import { homeOutline, mapOutline, listOutline, personOutline } from 'ionicons/ic
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss'],
   standalone: true,
-  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
+  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel, IonRouterOutlet, RouterLink, RouterLinkActive],
 })
 export class TabsPage {
   constructor() {

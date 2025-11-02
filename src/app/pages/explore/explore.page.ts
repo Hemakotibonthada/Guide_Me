@@ -23,12 +23,12 @@ export class ExplorePage {
   searchQuery = '';
   places: any[] = [];
   popularDestinations = [
-    { name: 'Paris, France', image: 'assets/destinations/paris.jpg' },
-    { name: 'Tokyo, Japan', image: 'assets/destinations/tokyo.jpg' },
-    { name: 'New York, USA', image: 'assets/destinations/newyork.jpg' },
-    { name: 'Bali, Indonesia', image: 'assets/destinations/bali.jpg' },
-    { name: 'Dubai, UAE', image: 'assets/destinations/dubai.jpg' },
-    { name: 'Rome, Italy', image: 'assets/destinations/rome.jpg' }
+    { name: 'Paris, France', image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=300&fit=crop' },
+    { name: 'Tokyo, Japan', image: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&h=300&fit=crop' },
+    { name: 'New York, USA', image: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=400&h=300&fit=crop' },
+    { name: 'Bali, Indonesia', image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=400&h=300&fit=crop' },
+    { name: 'Dubai, UAE', image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=400&h=300&fit=crop' },
+    { name: 'Rome, Italy', image: 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&h=300&fit=crop' }
   ];
 
   constructor(private mapsService: MapsService) {

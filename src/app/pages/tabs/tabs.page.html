@@ -1,21 +1,23 @@
 <ion-tabs>
+  <ion-router-outlet></ion-router-outlet>
+  
   <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="home">
+    <ion-tab-button [routerLink]="['/home']" routerLinkActive="tab-selected">
       <ion-icon name="home-outline"></ion-icon>
       <ion-label>Home</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="my-trips">
+    <ion-tab-button [routerLink]="['/my-trips']" routerLinkActive="tab-selected">
       <ion-icon name="list-outline"></ion-icon>
       <ion-label>My Trips</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="explore">
+    <ion-tab-button [routerLink]="['/explore']" routerLinkActive="tab-selected">
       <ion-icon name="map-outline"></ion-icon>
       <ion-label>Explore</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="profile">
+    <ion-tab-button [routerLink]="['/profile']" routerLinkActive="tab-selected">
       <ion-icon name="person-outline"></ion-icon>
       <ion-label>Profile</ion-label>
     </ion-tab-button>

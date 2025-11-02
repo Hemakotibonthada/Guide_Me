@@ -8,7 +8,7 @@ import {
   IonCardSubtitle, IonCardContent, IonChip, IonIcon, IonFab, IonFabButton, IonButton
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { addOutline, locationOutline } from 'ionicons/icons';
+import { addOutline, locationOutline, airplaneOutline } from 'ionicons/icons';
 import { TripService } from '../../services/trip.service';
 import { AuthService } from '../../services/auth.service';
 import { Trip } from '../../models/trip.model';
@@ -35,7 +35,7 @@ export class MyTripsPage implements OnInit {
     private authService: AuthService,
     private router: Router
   ) {
-    addIcons({ addOutline, locationOutline });
+    addIcons({ addOutline, locationOutline, airplaneOutline });
   }
 
   ngOnInit() {
