@@ -1,19 +1,19 @@
 :root {
-  /** primary **/
-  --ion-color-primary: #5260ff;
-  --ion-color-primary-rgb: 82, 96, 255;
+  /** primary - Modern Blue **/
+  --ion-color-primary: #4F46E5;
+  --ion-color-primary-rgb: 79, 70, 229;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #4854e0;
-  --ion-color-primary-tint: #6370ff;
+  --ion-color-primary-shade: #4338CA;
+  --ion-color-primary-tint: #6366F1;
 
-  /** secondary **/
-  --ion-color-secondary: #764ba2;
-  --ion-color-secondary-rgb: 118, 75, 162;
+  /** secondary - Vibrant Purple **/
+  --ion-color-secondary: #7C3AED;
+  --ion-color-secondary-rgb: 124, 58, 237;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #68428f;
-  --ion-color-secondary-tint: #845fab;
+  --ion-color-secondary-shade: #6D28D9;
+  --ion-color-secondary-tint: #8B5CF6;
 
   /** tertiary **/
   --ion-color-tertiary: #f093fb;
@@ -71,10 +71,21 @@
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
 
-  /** Additional app colors **/
-  --ion-background-color: #ffffff;
-  --ion-text-color: #000000;
-  --ion-border-color: #dedede;
+  /** Additional app colors - Clean White Theme **/
+  --ion-background-color: #F9FAFB;
+  --ion-background-color-rgb: 249, 250, 251;
+  --ion-text-color: #111827;
+  --ion-text-color-rgb: 17, 24, 39;
+  --ion-border-color: #E5E7EB;
+  --ion-card-background: #FFFFFF;
+  --ion-toolbar-background: #FFFFFF;
+  --ion-item-background: #FFFFFF;
+  
+  /** Custom accent colors **/
+  --accent-gradient-start: #4F46E5;
+  --accent-gradient-end: #7C3AED;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --hover-bg: #F3F4F6;
 }
 
 @media (prefers-color-scheme: dark) {

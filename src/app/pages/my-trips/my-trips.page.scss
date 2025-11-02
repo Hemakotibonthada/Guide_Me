@@ -1,67 +1,151 @@
+ion-content {
+  --background: var(--ion-background-color);
+}
+
+ion-toolbar {
+  --background: var(--ion-card-background);
+  --border-width: 0 0 1px 0;
+  
+  ion-title {
+    font-weight: 700;
+    font-size: 20px;
+  }
+}
+
+ion-segment {
+  margin: 8px 16px;
+  --background: var(--ion-background-color);
+  border-radius: 12px;
+  padding: 4px;
+
+  ion-segment-button {
+    --color: var(--ion-color-medium);
+    --color-checked: var(--ion-color-primary);
+    --indicator-color: var(--ion-card-background);
+    --indicator-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: capitalize;
+    min-height: 40px;
+    border-radius: 10px;
+  }
+}
+
 .trip-card {
-  margin-bottom: 16px;
+  margin: 16px;
   cursor: pointer;
-  transition: transform 0.2s;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  border: 1px solid var(--ion-border-color);
+  overflow: hidden;
+  animation: slideUp 0.4s ease-out;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
 
   &:active {
-    transform: scale(0.98);
+    transform: translateY(-2px);
   }
 
   .trip-image {
-    height: 180px;
+    height: 200px;
     background-size: cover;
     background-position: center;
+    background-color: var(--ion-color-light);
     position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%);
+    }
 
     .status-chip {
       position: absolute;
-      top: 12px;
-      right: 12px;
-      font-weight: 600;
+      top: 14px;
+      right: 14px;
+      font-weight: 700;
+      font-size: 12px;
       text-transform: capitalize;
+      z-index: 1;
+      --background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
   }
 
   ion-card-header {
-    padding: 12px 16px 8px;
+    padding: 16px 18px 10px;
+    background: var(--ion-card-background);
 
     ion-card-title {
       font-size: 20px;
-      font-weight: bold;
+      font-weight: 700;
+      color: var(--ion-text-color);
+      letter-spacing: -0.3px;
+      margin-bottom: 6px;
     }
 
     ion-card-subtitle {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       font-size: 14px;
       margin-top: 4px;
+      color: var(--ion-color-medium);
+      font-weight: 600;
 
       ion-icon {
         font-size: 16px;
+        color: var(--ion-color-primary);
       }
     }
   }
 
   ion-card-content {
-    padding: 8px 16px 16px;
+    padding: 12px 18px 16px;
+    background: var(--ion-card-background);
 
     .trip-info {
       .info-item {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 8px;
+        align-items: center;
+        margin-bottom: 10px;
         font-size: 14px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--ion-border-color);
+
+        &:last-child {
+          border-bottom: none;
+          margin-bottom: 0;
+        }
 
         .label {
           font-weight: 600;
           color: var(--ion-color-medium);
+          font-size: 13px;
+        }
+
+        span:last-child {
+          font-weight: 600;
+          color: var(--ion-text-color);
         }
 
         .expense {
           color: var(--ion-color-primary);
-          font-weight: 600;
+          font-weight: 700;
+          background: rgba(var(--ion-color-primary-rgb), 0.08);
+          padding: 4px 12px;
+          border-radius: 12px;
+          font-size: 14px;
         }
       }
     }
@@ -73,26 +157,126 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80px 20px;
+  padding: 100px 20px;
   text-align: center;
+  animation: fadeIn 0.6s ease-out;
 
   ion-icon {
-    font-size: 80px;
-    color: var(--ion-color-medium);
-    opacity: 0.5;
-    margin-bottom: 20px;
+    font-size: 100px;
+    background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    opacity: 0.6;
+    margin-bottom: 24px;
   }
 
   h2 {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 0 0 8px 0;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
     text-transform: capitalize;
+    color: var(--ion-text-color);
+    letter-spacing: -0.3px;
   }
 
   p {
     font-size: 16px;
     color: var(--ion-color-medium);
-    margin: 0 0 24px 0;
+    margin: 0 0 32px 0;
+    font-weight: 500;
+  }
+
+  ion-button {
+    --border-radius: 14px;
+    --padding-top: 14px;
+    --padding-bottom: 14px;
+    --padding-start: 28px;
+    --padding-end: 28px;
+    font-weight: 700;
+    font-size: 16px;
+    --background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+    --box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3);
+    
+    &:hover {
+      --box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+      transform: translateY(-2px);
+    }
+  }
+}
+
+ion-fab-button {
+  --background: linear-gradient(135deg, var(--ion-color-primary) 0%, var(--ion-color-secondary) 100%);
+  --box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+  --border-radius: 16px;
+  width: 60px;
+  height: 60px;
+
+  &:hover {
+    --box-shadow: 0 8px 24px rgba(79, 70, 229, 0.45);
+    transform: translateY(-2px);
+  }
+
+  ion-icon {
+    font-size: 28px;
+  }
+}
+
+// Responsive
+@media (max-width: 576px) {
+  ion-segment {
+    margin: 8px 12px;
+
+    ion-segment-button {
+      font-size: 13px;
+      min-height: 36px;
+    }
+  }
+
+  .trip-card {
+    margin: 12px;
+
+    .trip-image {
+      height: 180px;
+    }
+
+    ion-card-header {
+      padding: 14px 16px 8px;
+
+      ion-card-title {
+        font-size: 18px;
+      }
+    }
+
+    ion-card-content {
+      padding: 10px 16px 14px;
+
+      .trip-info .info-item {
+        font-size: 13px;
+        padding: 6px 0;
+        margin-bottom: 8px;
+      }
+    }
+  }
+
+  .empty-state {
+    padding: 80px 20px;
+
+    ion-icon {
+      font-size: 90px;
+    }
+
+    h2 {
+      font-size: 24px;
+    }
+  }
+
+  ion-fab-button {
+    width: 56px;
+    height: 56px;
+
+    ion-icon {
+      font-size: 26px;
+    }
   }
 }

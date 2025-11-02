@@ -11,8 +11,9 @@
   <ion-card>
     <ion-list>
       <ion-item>
-        <ion-label position="stacked">Trip Name *</ion-label>
         <ion-input 
+          label="Trip Name *"
+          labelPlacement="stacked"
           [(ngModel)]="trip.name" 
           placeholder="e.g., Summer Vacation 2025"
           type="text">
@@ -20,8 +21,9 @@
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">Destination *</ion-label>
         <ion-input 
+          label="Destination *"
+          labelPlacement="stacked"
           [(ngModel)]="trip.destination" 
           placeholder="e.g., Paris, France"
           type="text">
@@ -45,8 +47,9 @@
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">Budget (USD)</ion-label>
         <ion-input 
+          label="Budget (USD)"
+          labelPlacement="stacked"
           [(ngModel)]="trip.budget" 
           type="number"
           placeholder="0">
@@ -54,8 +57,9 @@
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">Description</ion-label>
         <ion-textarea 
+          label="Description"
+          labelPlacement="stacked"
           [(ngModel)]="trip.description" 
           placeholder="Tell us about your trip..."
           rows="4">
