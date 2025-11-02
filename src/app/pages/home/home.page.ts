@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { 
@@ -11,6 +11,7 @@ import { addOutline, airplaneOutline, walletOutline, cameraOutline, mapOutline }
 import { AuthService } from '../../services/auth.service';
 import { TripService } from '../../services/trip.service';
 import { Trip, User } from '../../models/trip.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -23,7 +24,7 @@ import { Trip, User } from '../../models/trip.model';
     IonGrid, IonRow, IonCol, IonChip, IonLabel, IonFab, IonFabButton
   ]
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   currentUser: User | null = null;
   upcomingTrips: Trip[] = [];
   ongoingTrips: Trip[] = [];
@@ -33,6 +34,9 @@ export class HomePage implements OnInit {
     placesVisited: 0,
     photosUploaded: 0
   };
+
+  private userSub?: Subscription;
+  private tripsSub?: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -51,44 +55,51 @@ export class HomePage implements OnInit {
   }
 
   async loadUserData() {
-    this.authService.getCurrentUser().subscribe(async user => {
+    this.userSub?.unsubscribe();
+    this.userSub = this.authService.getCurrentUser().subscribe(user => {
+      this.currentUser = user;
       if (user) {
-        this.currentUser = user;
-        await this.loadTrips();
-        this.calculateStats();
+        this.subscribeToTrips(user.uid);
+      } else {
+        this.upcomingTrips = [];
+        this.ongoingTrips = [];
+        this.resetStats();
+        this.tripsSub?.unsubscribe();
       }
     });
   }
 
-  async loadTrips() {
-    if (!this.currentUser) return;
-
-    this.tripService.getUserTrips(this.currentUser.uid).subscribe(trips => {
+  private subscribeToTrips(userId: string) {
+    this.tripsSub?.unsubscribe();
+    this.tripsSub = this.tripService.getUserTrips(userId).subscribe(trips => {
       const now = new Date();
-      this.upcomingTrips = trips.filter(t => 
-        t.status === 'planned' && new Date(t.startDate) > now
-      ).slice(0, 3);
-      
-      this.ongoingTrips = trips.filter(t => 
-        t.status === 'ongoing' || 
+      this.upcomingTrips = trips
+        .filter(t => t.status === 'planned' && new Date(t.startDate) > now)
+        .slice(0, 3);
+
+      this.ongoingTrips = trips.filter(t =>
+        t.status === 'ongoing' ||
         (new Date(t.startDate) <= now && new Date(t.endDate) >= now)
       );
+
+      this.calculateStats(trips);
     });
   }
 
-  calculateStats() {
-    if (!this.currentUser) return;
+  private calculateStats(trips: Trip[]) {
+    this.stats.totalTrips = trips.length;
+    this.stats.totalExpenses = trips.reduce((sum, trip) => sum + (trip.totalExpenses || 0), 0);
+    this.stats.placesVisited = trips.reduce((sum, trip) => sum + (trip.visitedPlacesCount || 0), 0);
+    this.stats.photosUploaded = trips.reduce((sum, trip) => sum + (trip.photosCount || 0), 0);
+  }
 
-    this.tripService.getUserTrips(this.currentUser.uid).subscribe(trips => {
-      this.stats.totalTrips = trips.length;
-      this.stats.totalExpenses = trips.reduce((sum, trip) => sum + (trip.totalExpenses || 0), 0);
-      this.stats.placesVisited = trips.reduce((sum, trip) => 
-        sum + trip.places.filter(p => p.visited).length, 0
-      );
-      this.stats.photosUploaded = trips.reduce((sum, trip) => 
-        sum + (trip.photos?.length || 0), 0
-      );
-    });
+  private resetStats() {
+    this.stats = {
+      totalTrips: 0,
+      totalExpenses: 0,
+      placesVisited: 0,
+      photosUploaded: 0
+    };
   }
 
   createTrip() {
@@ -116,5 +127,10 @@ export class HomePage implements OnInit {
     const end = new Date(trip.endDate);
     const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     return `${days} day${days > 1 ? 's' : ''}`;
+  }
+
+  ngOnDestroy(): void {
+    this.userSub?.unsubscribe();
+    this.tripsSub?.unsubscribe();
   }
 }

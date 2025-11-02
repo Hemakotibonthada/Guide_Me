@@ -173,6 +173,11 @@ ion-toolbar {
     background-color: var(--ion-color-light);
     position: relative;
 
+    &.no-image {
+      background-image: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.12) 0%, rgba(var(--ion-color-secondary-rgb), 0.12) 100%);
+      background-blend-mode: multiply;
+    }
+
     &::after {
       content: '';
       position: absolute;

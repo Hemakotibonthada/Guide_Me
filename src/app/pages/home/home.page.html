@@ -58,7 +58,7 @@
       <h2>Ongoing Trips</h2>
     </div>
     <ion-card *ngFor="let trip of ongoingTrips" class="trip-card ongoing" (click)="viewTrip(trip.id)">
-      <div class="trip-image" [style.background-image]="'url(' + (trip.coverImage || 'assets/placeholder-trip.jpg') + ')'">
+      <div class="trip-image" [class.no-image]="!trip.coverImage" [style.background-image]="trip.coverImage ? 'url(' + trip.coverImage + ')' : ''">
         <ion-chip class="status-chip" color="success">
           <ion-label>Ongoing</ion-label>
         </ion-chip>
@@ -86,7 +86,7 @@
       <ion-button fill="clear" size="small" (click)="viewAllTrips()">View All</ion-button>
     </div>
     <ion-card *ngFor="let trip of upcomingTrips" class="trip-card" (click)="viewTrip(trip.id)">
-      <div class="trip-image" [style.background-image]="'url(' + (trip.coverImage || 'assets/placeholder-trip.jpg') + ')'">
+      <div class="trip-image" [class.no-image]="!trip.coverImage" [style.background-image]="trip.coverImage ? 'url(' + trip.coverImage + ')' : ''">
         <ion-chip class="status-chip" color="primary">
           <ion-label>Upcoming</ion-label>
         </ion-chip>

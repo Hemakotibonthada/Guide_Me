@@ -6,6 +6,8 @@ export interface User {
   createdAt: Date;
 }
 
+export type TripStatus = 'planned' | 'ongoing' | 'completed';
+
 export interface Trip {
   id: string;
   userId: string;
@@ -15,12 +17,19 @@ export interface Trip {
   endDate: Date;
   budget: number;
   totalExpenses: number;
-  status: 'planned' | 'ongoing' | 'completed';
+  status: TripStatus;
   coverImage?: string;
   description?: string;
-  places: Place[];
-  expenses: Expense[];
-  photos: Photo[];
+  interests?: string[];
+  aiSummary?: string;
+  places?: Place[];
+  expenses?: Expense[];
+  photos?: Photo[];
+  placesCount?: number;
+  visitedPlacesCount?: number;
+  expensesCount?: number;
+  photosCount?: number;
+  travelSegmentsCount?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,6 +52,8 @@ export interface Place {
   notes?: string;
   photos: string[];
   aiSuggested: boolean;
+  stayDurationMinutes?: number;
+  sortOrder?: number;
 }
 
 export interface Expense {
@@ -86,4 +97,18 @@ export interface AIRecommendation {
   content: string;
   data?: any;
   confidence: number;
+}
+
+export interface TravelSegment {
+  id: string;
+  tripId: string;
+  type: 'flight' | 'train' | 'bus' | 'car' | 'ferry' | 'other';
+  provider: string;
+  departureLocation: string;
+  arrivalLocation: string;
+  departureTime: Date;
+  arrivalTime: Date;
+  bookingReference?: string;
+  seatNumber?: string;
+  notes?: string;
 }

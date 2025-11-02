@@ -10,142 +10,541 @@
       <ion-segment-button value="overview">
         <ion-label>Overview</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="places">
-        <ion-label>Places</ion-label>
+      <ion-segment-button value="itinerary">
+        <ion-label>Itinerary</ion-label>
       </ion-segment-button>
       <ion-segment-button value="expenses">
         <ion-label>Expenses</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="photos">
-        <ion-label>Photos</ion-label>
+      <ion-segment-button value="map">
+        <ion-label>Map</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="memories">
+        <ion-label>Memories</ion-label>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- Overview Section -->
-  <div *ngIf="segment === 'overview' && trip">
-    <ion-card>
-      <div class="trip-header-image" [style.background-image]="'url(' + (trip.coverImage || 'assets/placeholder-trip.jpg') + ')'"></div>
-      <ion-card-header>
-        <ion-card-title>{{ trip.destination }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p><strong>Duration:</strong> {{ formatDate(trip.startDate) }} - {{ formatDate(trip.endDate) }}</p>
-        <p><strong>Budget:</strong> ${{ trip.budget }}</p>
-        <p><strong>Spent:</strong> ${{ trip.totalExpenses || 0 }}</p>
-        <p *ngIf="trip.description">{{ trip.description }}</p>
-      </ion-card-content>
-    </ion-card>
+  <ng-container *ngIf="trip as currentTrip; else loadingTrip">
+    <ng-container [ngSwitch]="segment">
+          <!-- Overview -->
+          <ng-container *ngSwitchCase="'overview'">
+            <ion-card class="hero-card">
+              <div class="trip-hero" [class.no-image]="!currentTrip.coverImage" [style.background-image]="currentTrip.coverImage ? 'url(' + currentTrip.coverImage + ')' : ''">
+                <div class="hero-actions">
+                  <ion-chip color="light">
+                    <ion-label>{{ currentTrip.status | titlecase }}</ion-label>
+                  </ion-chip>
+                </div>
+              </div>
+              <ion-card-header>
+                <ion-card-title>{{ currentTrip.destination }}</ion-card-title>
+                <ion-note>Managed by GuideMe Travel</ion-note>
+              </ion-card-header>
+              <ion-card-content>
+                <div class="overview-grid">
+                  <div>
+                    <p class="label">Travel Dates</p>
+                    <p class="value">{{ formatDate(currentTrip.startDate) }} - {{ formatDate(currentTrip.endDate) }}</p>
+                  </div>
+                  <div>
+                    <p class="label">Budget</p>
+                    <p class="value">${{ currentTrip.budget | number:'1.0-0' }}</p>
+                  </div>
+                  <div>
+                    <p class="label">Spent</p>
+                    <p class="value text-primary">${{ currentTrip.totalExpenses | number:'1.0-0' }}</p>
+                  </div>
+                </div>
+                <div class="budget-progress" *ngIf="currentTrip.budget">
+                  <ion-progress-bar [value]="budgetProgress / 100"></ion-progress-bar>
+                  <div class="progress-meta">
+                    <span>{{ budgetProgress }}% of budget used</span>
+                    <span>Remaining ${{ (currentTrip.budget - currentTrip.totalExpenses) | number:'1.0-0' }}</span>
+                  </div>
+                </div>
+                <p class="trip-description" *ngIf="currentTrip.description">{{ currentTrip.description }}</p>
+              </ion-card-content>
+            </ion-card>
 
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Trip Statistics</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <div class="stats">
-          <div class="stat-item">
-            <ion-icon name="map-outline" color="primary"></ion-icon>
-            <div>
-              <h3>{{ places.length }}</h3>
-              <p>Total Places</p>
+            <ion-card class="stats-card">
+              <ion-card-header>
+                <ion-card-title>Trip Snapshot</ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-grid>
+                  <ion-row>
+                    <ion-col size="6">
+                      <div class="stat-tile">
+                        <ion-icon name="map-outline"></ion-icon>
+                        <h3>{{ currentTrip.placesCount || places.length }}</h3>
+                        <p>Total Places</p>
+                      </div>
+                    </ion-col>
+                    <ion-col size="6">
+                      <div class="stat-tile">
+                        <ion-icon name="checkmark-circle"></ion-icon>
+                        <h3>{{ currentTrip.visitedPlacesCount || getVisitedCount() }}</h3>
+                        <p>Visited</p>
+                      </div>
+                    </ion-col>
+                    <ion-col size="6">
+                      <div class="stat-tile">
+                        <ion-icon name="images-outline"></ion-icon>
+                        <h3>{{ currentTrip.photosCount || photos.length }}</h3>
+                        <p>Memories</p>
+                      </div>
+                    </ion-col>
+                    <ion-col size="6">
+                      <div class="stat-tile">
+                        <ion-icon name="wallet-outline"></ion-icon>
+                        <h3>${{ currentTrip.totalExpenses | number:'1.0-0' }}</h3>
+                        <p>Total Expenses</p>
+                      </div>
+                    </ion-col>
+                  </ion-row>
+                </ion-grid>
+              </ion-card-content>
+            </ion-card>
+
+            <ion-card class="segments-card">
+              <ion-card-header class="card-header-actions">
+                <ion-card-title>Travel Logistics</ion-card-title>
+                <ion-button size="small" fill="clear" (click)="openAddTravelSegmentModal()">
+                  <ion-icon slot="start" name="add-outline"></ion-icon>
+                  Add Segment
+                </ion-button>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list *ngIf="travelSegments.length; else noSegments">
+                  <ion-item *ngFor="let segment of travelSegments">
+                    <ion-icon slot="start" [name]="segment.type === 'flight' ? 'airplane-outline' : segment.type === 'train' ? 'train-outline' : segment.type === 'bus' ? 'bus-outline' : segment.type === 'ferry' ? 'boat-outline' : 'car-outline'" color="primary"></ion-icon>
+                    <ion-label>
+                      <h3>{{ segment.departureLocation }} → {{ segment.arrivalLocation }}</h3>
+                      <p>{{ formatDateTime(segment.departureTime) }} - {{ formatDateTime(segment.arrivalTime) }}</p>
+                      <p *ngIf="segment.provider">{{ segment.provider }} <span *ngIf="segment.bookingReference">• Ref {{ segment.bookingReference }}</span></p>
+                    </ion-label>
+                    <ion-button fill="clear" color="danger" (click)="removeTravelSegment(segment)">
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </ion-button>
+                  </ion-item>
+                </ion-list>
+                <ng-template #noSegments>
+                  <div class="empty-inline">
+                    <ion-icon name="navigate-outline"></ion-icon>
+                    <p>Add flights, trains or other travel plans to keep your itinerary complete.</p>
+                  </div>
+                </ng-template>
+              </ion-card-content>
+            </ion-card>
+          </ng-container>
+
+          <!-- Itinerary -->
+          <ng-container *ngSwitchCase="'itinerary'">
+            <div class="itinerary-actions">
+              <ion-button (click)="openAddPlaceModal()">
+                <ion-icon slot="start" name="add-outline"></ion-icon>
+                Add Place
+              </ion-button>
+              <ion-button color="secondary" (click)="generateAISuggestions()" [disabled]="isLoadingAISuggestions">
+                <ion-icon slot="start" name="sparkles-outline"></ion-icon>
+                {{ isLoadingAISuggestions ? 'Asking AI…' : 'Ask AI for Ideas' }}
+              </ion-button>
+              <ion-button fill="outline" color="primary" (click)="optimizeItineraryOrder()" [disabled]="isOptimizing || places.length < 2">
+                <ion-icon slot="start" name="analytics-outline"></ion-icon>
+                {{ isOptimizing ? 'Optimizing…' : 'Optimize Order' }}
+              </ion-button>
             </div>
-          </div>
-          <div class="stat-item">
-            <ion-icon name="checkmark-circle" color="success"></ion-icon>
-            <div>
-              <h3>{{ getVisitedCount() }}</h3>
-              <p>Visited</p>
+
+            <ion-card *ngIf="aiErrorMessage">
+              <ion-card-content class="error-message">{{ aiErrorMessage }}</ion-card-content>
+            </ion-card>
+
+            <ion-card *ngIf="aiSuggestions.length">
+              <ion-card-header>
+                <ion-card-title>AI Suggestions</ion-card-title>
+                <ion-note>Personalized ideas powered by GuideMe AI</ion-note>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list>
+                  <ion-item *ngFor="let suggestion of aiSuggestions">
+                    <ion-label>
+                      <h3>{{ suggestion.content }}</h3>
+                      <p *ngIf="suggestion.data?.description">{{ suggestion.data.description }}</p>
+                      <p class="suggestion-meta" *ngIf="suggestion.data?.estimatedDuration">~{{ suggestion.data.estimatedDuration }} min • Rated {{ suggestion.data.rating }}/5</p>
+                    </ion-label>
+                    <ion-button slot="end" size="small" (click)="addSuggestionToItinerary(suggestion)">Add</ion-button>
+                  </ion-item>
+                </ion-list>
+              </ion-card-content>
+            </ion-card>
+
+            <div class="itinerary-group" *ngIf="unvisitedPlaces.length">
+              <h2>Upcoming Stops</h2>
+              <ion-card *ngFor="let place of unvisitedPlaces" class="place-card">
+                <ion-card-header>
+                  <ion-card-title>{{ place.name }}</ion-card-title>
+                  <ion-note>{{ place.address }}</ion-note>
+                </ion-card-header>
+                <ion-card-content>
+                  <div class="place-meta">
+                    <ion-chip color="warning" *ngIf="place.estimatedDuration">
+                      <ion-icon name="time-outline"></ion-icon>
+                      <ion-label>{{ place.estimatedDuration }} min</ion-label>
+                    </ion-chip>
+                    <ion-chip color="secondary" *ngIf="place.rating">
+                      <ion-label>⭐ {{ place.rating }}</ion-label>
+                    </ion-chip>
+                    <ion-chip *ngIf="getPhotosForPlace(place.id).length">
+                      <ion-icon name="images-outline"></ion-icon>
+                      <ion-label>{{ getPhotosForPlace(place.id).length }} photos</ion-label>
+                    </ion-chip>
+                  </div>
+                  <p class="place-notes" *ngIf="place.notes">{{ place.notes }}</p>
+                  <ion-button size="small" color="success" (click)="togglePlaceVisited(place)">
+                    <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+                    Mark as visited
+                  </ion-button>
+                </ion-card-content>
+              </ion-card>
             </div>
-          </div>
-          <div class="stat-item">
-            <ion-icon name="wallet-outline" color="warning"></ion-icon>
-            <div>
-              <h3>{{ expenses.length }}</h3>
-              <p>Expenses</p>
+
+            <div class="itinerary-group" *ngIf="visitedPlaces.length">
+              <h2>Visited</h2>
+              <ion-card *ngFor="let place of visitedPlaces" class="place-card visited">
+                <ion-card-header>
+                  <ion-card-title>{{ place.name }}</ion-card-title>
+                  <ion-note>{{ place.address }}</ion-note>
+                </ion-card-header>
+                <ion-card-content>
+                  <div class="place-meta">
+                    <ion-chip color="success">
+                      <ion-icon name="checkmark-circle"></ion-icon>
+                      <ion-label>{{ formatDate(getVisitedDate(place)) }}</ion-label>
+                    </ion-chip>
+                    <ion-chip *ngIf="getPhotosForPlace(place.id).length">
+                      <ion-icon name="images-outline"></ion-icon>
+                      <ion-label>{{ getPhotosForPlace(place.id).length }} memories</ion-label>
+                    </ion-chip>
+                  </div>
+                  <ion-button size="small" fill="outline" (click)="togglePlaceVisited(place)">
+                    Mark as not visited
+                  </ion-button>
+                </ion-card-content>
+              </ion-card>
             </div>
+
+            <div class="empty-state" *ngIf="!places.length && !isLoadingAISuggestions">
+              <ion-icon name="map-outline"></ion-icon>
+              <h2>No places added yet</h2>
+              <p>Use the AI planner or search to build your itinerary.</p>
+              <ion-button (click)="openAddPlaceModal()">Add your first place</ion-button>
+            </div>
+          </ng-container>
+
+          <!-- Expenses -->
+          <ng-container *ngSwitchCase="'expenses'">
+            <ion-card class="expense-summary">
+              <ion-card-header class="card-header-actions">
+                <ion-card-title>Budget Overview</ion-card-title>
+                <ion-button size="small" fill="clear" (click)="openAddExpenseModal()">
+                  <ion-icon slot="start" name="add-outline"></ion-icon>
+                  Add Expense
+                </ion-button>
+              </ion-card-header>
+              <ion-card-content>
+                <h2>${{ currentTrip.totalExpenses | number:'1.0-0' }}</h2>
+                <p>Total spent so far</p>
+                <ion-progress-bar [value]="budgetProgress / 100"></ion-progress-bar>
+                <div class="budget-stats">
+                  <span>Budget • ${{ currentTrip.budget | number:'1.0-0' }}</span>
+                  <span>Remaining • ${{ (currentTrip.budget || 0) - (currentTrip.totalExpenses || 0) | number:'1.0-0' }}</span>
+                </div>
+              </ion-card-content>
+            </ion-card>
+
+            <ion-card *ngFor="let expense of expenses" class="expense-card">
+              <ion-card-content>
+                <div class="expense-row">
+                  <div>
+                    <h3>{{ expense.description }}</h3>
+                    <p>{{ expense.category | titlecase }} <span *ngIf="expense.placeId">• {{ getPlaceName(expense.placeId) }}</span></p>
+                  </div>
+                  <div class="expense-amount">
+                    <h3>${{ expense.amount | number:'1.0-0' }}</h3>
+                    <p>{{ formatDate(expense.date) }}</p>
+                  </div>
+                </div>
+              </ion-card-content>
+            </ion-card>
+
+            <div class="empty-state" *ngIf="!expenses.length">
+              <ion-icon name="wallet-outline"></ion-icon>
+              <h2>No expenses tracked yet</h2>
+              <p>Log transport, accommodation and activity costs to stay on budget.</p>
+              <ion-button (click)="openAddExpenseModal()">Add an expense</ion-button>
+            </div>
+          </ng-container>
+
+          <!-- Map -->
+          <ng-container *ngSwitchCase="'map'">
+            <div *ngIf="!mapsEnabled" class="empty-state">
+              <ion-icon name="map-outline"></ion-icon>
+              <h2>Maps not configured</h2>
+              <p>Add a Google Maps API key in <code>environment.ts</code> to enable route tracking.</p>
+            </div>
+            <div *ngIf="mapsEnabled">
+              <div class="map-wrapper">
+                <div #mapContainer class="map-container"></div>
+              </div>
+              <div class="map-legend" *ngIf="places.length">
+                <ion-chip color="primary">
+                  <ion-label>Planned</ion-label>
+                </ion-chip>
+                <ion-chip color="success">
+                  <ion-label>Visited</ion-label>
+                </ion-chip>
+              </div>
+              <div class="empty-state" *ngIf="!places.length">
+                <ion-icon name="map-outline"></ion-icon>
+                <h2>No locations yet</h2>
+                <p>Plan places to unlock the interactive trip map.</p>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Memories -->
+          <ng-container *ngSwitchCase="'memories'">
+            <div class="memory-actions">
+              <ion-button (click)="captureMemory()">
+                <ion-icon slot="start" name="camera-outline"></ion-icon>
+                Capture Memory
+              </ion-button>
+              <ion-button fill="outline" (click)="pickMemoryFromGallery()">
+                <ion-icon slot="start" name="images-outline"></ion-icon>
+                Upload from Gallery
+              </ion-button>
+            </div>
+
+            <ion-grid *ngIf="photos.length">
+              <ion-row>
+                <ion-col size="12" size-md="6" size-lg="4" *ngFor="let photo of photos">
+                  <ion-card class="memory-card">
+                    <img [src]="photo.thumbnailUrl" [alt]="photo.caption || 'Trip Memory'">
+                    <ion-card-content>
+                      <h3 *ngIf="photo.caption">{{ photo.caption }}</h3>
+                      <p>{{ getPlaceName(photo.placeId) }} • {{ formatDate(photo.takenAt) }}</p>
+                    </ion-card-content>
+                  </ion-card>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+
+            <div class="empty-state" *ngIf="!photos.length">
+              <ion-icon name="camera-outline"></ion-icon>
+              <h2>No memories yet</h2>
+              <p>Capture photos and attach them to locations to relive the journey.</p>
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+
+      <ng-template #loadingTrip>
+        <div class="loading-state">
+          <ion-spinner></ion-spinner>
+        </div>
+      </ng-template>
+    </ion-content>
+
+    <!-- Floating Action Button for quick add -->
+    <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+      <ion-fab-button (click)="openAddPlaceModal()">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+    <!-- Add Place Modal -->
+    <ion-modal [isOpen]="showAddPlaceModal" (didDismiss)="closeAddPlaceModal()">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Add Place</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="closeAddPlaceModal()">Close</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+          <ion-searchbar placeholder="Search places" debounce="400" (ionInput)="searchPlaces($event)"></ion-searchbar>
+          <ion-list *ngIf="placeSearchResults.length">
+            <ion-item button="true" *ngFor="let result of placeSearchResults" (click)="selectPlaceResult(result)">
+              <ion-label>
+                <h3>{{ result.name }}</h3>
+                <p>{{ result.address }}</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+
+          <ion-list>
+            <ion-item>
+              <ion-input label="Name" labelPlacement="stacked" [(ngModel)]="newPlace.name" placeholder="Eiffel Tower"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Address" labelPlacement="stacked" [(ngModel)]="newPlace.address" placeholder="Paris, France"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-datetime presentation="date" label="Planned Date" labelPlacement="stacked" [(ngModel)]="newPlace.plannedDate"></ion-datetime>
+            </ion-item>
+            <ion-item>
+              <ion-input type="number" label="Estimated Duration (min)" labelPlacement="stacked" [(ngModel)]="newPlace.estimatedDuration"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-textarea label="Notes" labelPlacement="stacked" autoGrow="true" [(ngModel)]="newPlace.notes" placeholder="Add personal notes or reminders..."></ion-textarea>
+            </ion-item>
+          </ion-list>
+
+          <ion-button expand="block" class="mt-2" (click)="savePlace()" [disabled]="isSavingPlace">
+            {{ isSavingPlace ? 'Saving…' : 'Save Place' }}
+          </ion-button>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
+    <!-- Add Expense Modal -->
+    <ion-modal [isOpen]="showAddExpenseModal" (didDismiss)="showAddExpenseModal = false">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Add Expense</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="showAddExpenseModal = false">Close</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+          <ion-list>
+            <ion-item>
+              <ion-input label="Description" labelPlacement="stacked" [(ngModel)]="newExpense.description" placeholder="Dinner at local bistro"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input type="number" label="Amount" labelPlacement="stacked" [(ngModel)]="newExpense.amount" placeholder="120"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-select label="Category" labelPlacement="stacked" [(ngModel)]="newExpense.category">
+                <ion-select-option value="transport">Transport</ion-select-option>
+                <ion-select-option value="accommodation">Accommodation</ion-select-option>
+                <ion-select-option value="food">Food</ion-select-option>
+                <ion-select-option value="activities">Activities</ion-select-option>
+                <ion-select-option value="shopping">Shopping</ion-select-option>
+                <ion-select-option value="other">Other</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-datetime presentation="date" label="Date" labelPlacement="stacked" [(ngModel)]="newExpense.date"></ion-datetime>
+            </ion-item>
+            <ion-item>
+              <ion-select label="Linked Place" labelPlacement="stacked" [(ngModel)]="newExpense.placeId">
+                <ion-select-option value="">None</ion-select-option>
+                <ion-select-option *ngFor="let place of places" [value]="place.id">{{ place.name }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-list>
+
+          <ion-button expand="block" (click)="saveExpense()" [disabled]="isSavingExpense">
+            {{ isSavingExpense ? 'Saving…' : 'Save Expense' }}
+          </ion-button>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
+    <!-- Add Travel Segment Modal -->
+    <ion-modal [isOpen]="showAddTravelSegmentModal" (didDismiss)="showAddTravelSegmentModal = false">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Add Travel Segment</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="showAddTravelSegmentModal = false">Close</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+          <ion-list>
+            <ion-item>
+              <ion-select label="Type" labelPlacement="stacked" [(ngModel)]="travelSegmentForm.type">
+                <ion-select-option value="flight">Flight</ion-select-option>
+                <ion-select-option value="train">Train</ion-select-option>
+                <ion-select-option value="bus">Bus</ion-select-option>
+                <ion-select-option value="car">Car</ion-select-option>
+                <ion-select-option value="ferry">Ferry</ion-select-option>
+                <ion-select-option value="other">Other</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Provider" labelPlacement="stacked" [(ngModel)]="travelSegmentForm.provider" placeholder="Airline, operator, etc."></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Departure" labelPlacement="stacked" [(ngModel)]="travelSegmentForm.departureLocation" placeholder="JFK Airport"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Arrival" labelPlacement="stacked" [(ngModel)]="travelSegmentForm.arrivalLocation" placeholder="CDG Airport"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-datetime presentation="date-time" label="Departure Time" labelPlacement="stacked" [(ngModel)]="travelSegmentForm.departureTime"></ion-datetime>
+            </ion-item>
+            <ion-item>
+              <ion-datetime presentation="date-time" label="Arrival Time" labelPlacement="stacked" [(ngModel)]="travelSegmentForm.arrivalTime"></ion-datetime>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Booking Reference" labelPlacement="stacked" [(ngModel)]="travelSegmentForm.bookingReference"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input label="Seat / Coach" labelPlacement="stacked" [(ngModel)]="travelSegmentForm.seatNumber"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-textarea label="Notes" labelPlacement="stacked" autoGrow="true" [(ngModel)]="travelSegmentForm.notes"></ion-textarea>
+            </ion-item>
+          </ion-list>
+
+          <ion-button expand="block" (click)="saveTravelSegment()" [disabled]="isSavingTravelSegment">
+            {{ isSavingTravelSegment ? 'Saving…' : 'Save Segment' }}
+          </ion-button>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+
+    <!-- Add Photo Modal -->
+    <ion-modal [isOpen]="showAddPhotoModal" (didDismiss)="showAddPhotoModal = false">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>Add Memory</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="showAddPhotoModal = false">Close</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content class="ion-padding">
+          <div class="photo-preview" *ngIf="pendingPhotoDataUrl">
+            <img [src]="pendingPhotoDataUrl" alt="Memory preview">
           </div>
-        </div>
-      </ion-card-content>
-    </ion-card>
-  </div>
+          <ion-list>
+            <ion-item>
+              <ion-input label="Caption" labelPlacement="stacked" [(ngModel)]="photoForm.caption" placeholder="Sunset at the beach"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-select label="Link to Place" labelPlacement="stacked" [(ngModel)]="photoForm.placeId">
+                <ion-select-option value="">General memory</ion-select-option>
+                <ion-select-option *ngFor="let place of places" [value]="place.id">{{ place.name }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-list>
 
-  <!-- Places Section -->
-  <div *ngIf="segment === 'places'">
-    <ion-card *ngFor="let place of places" class="place-card">
-      <ion-card-header>
-        <div class="place-header">
-          <ion-card-title>{{ place.name }}</ion-card-title>
-          <ion-icon 
-            [name]="place.visited ? 'checkmark-circle' : 'ellipse-outline'"
-            [color]="place.visited ? 'success' : 'medium'"
-            class="visit-icon"
-            (click)="togglePlaceVisited(place)">
-          </ion-icon>
-        </div>
-      </ion-card-header>
-      <ion-card-content>
-        <p>{{ place.address }}</p>
-        <div class="place-info">
-          <ion-chip>
-            <ion-label>⭐ {{ place.rating }}/5</ion-label>
-          </ion-chip>
-          <ion-chip>
-            <ion-label>⏱ {{ place.estimatedDuration }} min</ion-label>
-          </ion-chip>
-        </div>
-      </ion-card-content>
-    </ion-card>
-
-    <div class="empty-state" *ngIf="places.length === 0">
-      <ion-icon name="map-outline"></ion-icon>
-      <h2>No places added yet</h2>
-      <p>Start adding places to your trip</p>
-    </div>
-  </div>
-
-  <!-- Expenses Section -->
-  <div *ngIf="segment === 'expenses'">
-    <ion-card class="expense-summary">
-      <ion-card-content>
-        <h2>${{ trip?.totalExpenses || 0 }}</h2>
-        <p>Total Expenses</p>
-        <div class="budget-bar" *ngIf="trip">
-          <div class="spent-bar" [style.width]="(trip.totalExpenses / trip.budget * 100) + '%'"></div>
-        </div>
-        <p class="budget-text">Budget: ${{ trip?.budget }}</p>
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card *ngFor="let expense of expenses" class="expense-card">
-      <ion-card-content>
-        <div class="expense-row">
-          <div>
-            <h3>{{ expense.description }}</h3>
-            <p>{{ expense.category }}</p>
-          </div>
-          <div class="expense-amount">
-            <h3>${{ expense.amount }}</h3>
-            <p>{{ formatDate(expense.date) }}</p>
-          </div>
-        </div>
-      </ion-card-content>
-    </ion-card>
-
-    <div class="empty-state" *ngIf="expenses.length === 0">
-      <ion-icon name="wallet-outline"></ion-icon>
-      <h2>No expenses recorded</h2>
-      <p>Start tracking your trip expenses</p>
-    </div>
-  </div>
-
-  <!-- Photos Section -->
-  <div *ngIf="segment === 'photos'">
-    <div class="empty-state">
-      <ion-icon name="camera-outline"></ion-icon>
-      <h2>No photos yet</h2>
-      <p>Capture and save your memories</p>
-    </div>
-  </div>
-</ion-content>
+          <ion-button expand="block" (click)="savePhotoMemory()" [disabled]="isUploadingPhoto">
+            {{ isUploadingPhoto ? 'Uploading…' : 'Save Memory' }}
+          </ion-button>
+        </ion-content>
+      </ng-template>
+    </ion-modal>
