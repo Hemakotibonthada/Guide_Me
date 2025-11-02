@@ -1,1 +1,36 @@
-// Empty placeholder
+ion-content {
+  --background: var(--ion-background-color);
+}
+
+ion-toolbar {
+  --background: var(--ion-card-background);
+  --border-width: 0 0 1px 0;
+
+  ion-title {
+    font-weight: 700;
+    font-size: 20px;
+  }
+}
+
+h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--ion-text-color);
+  margin: 24px 0 12px;
+  letter-spacing: -0.5px;
+}
+
+p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ion-color-medium);
+  margin: 0;
+  font-weight: 500;
+}
+
+ion-card {
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--ion-border-color);
+  animation: slideUp 0.4s ease-out;
+}
