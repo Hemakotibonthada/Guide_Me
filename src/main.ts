@@ -8,7 +8,7 @@ import { importProvidersFrom } from '@angular/core';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { getFirestore, provideFirestore, enableIndexedDbPersistence, connectFirestoreEmulator } from '@angular/fire/firestore';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 import { environment } from './environments/environment';
 
@@ -21,7 +21,19 @@ bootstrapApplication(AppComponent, {
     importProvidersFrom(IonicStorageModule.forRoot()),
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
+    provideFirestore(() => {
+      const firestore = getFirestore();
+      // Enable offline persistence
+      enableIndexedDbPersistence(firestore).catch((err) => {
+        if (err.code === 'failed-precondition') {
+          console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+        } else if (err.code === 'unimplemented') {
+          console.warn('The current browser does not support offline persistence');
+        }
+      });
+      return firestore;
+    }),
     provideStorage(() => getStorage()),
   ],
 });
+

@@ -103,7 +103,14 @@ export class AuthService {
         createdAt: new Date()
       };
       
-      await this.createOrUpdateUserProfile(user);
+      // Try to create/update profile, but don't fail if Firestore is unavailable
+      try {
+        await this.createOrUpdateUserProfile(user);
+      } catch (firestoreError) {
+        console.warn('Could not sync user profile to Firestore:', firestoreError);
+        // Continue anyway - authentication succeeded
+      }
+      
       return user;
     } catch (error: any) {
       console.error('Error signing in with Google:', error);
@@ -130,17 +137,29 @@ export class AuthService {
   }
 
   private async createOrUpdateUserProfile(user: User): Promise<void> {
-    const userRef = doc(this.firestore, `users/${user.uid}`);
-    const userDoc = await getDoc(userRef);
-    
-    if (!userDoc.exists()) {
-      await setDoc(userRef, user);
-    } else {
-      await setDoc(userRef, {
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        email: user.email
-      }, { merge: true });
+    try {
+      const userRef = doc(this.firestore, `users/${user.uid}`);
+      
+      // Try to get the document with a timeout
+      const userDoc = await Promise.race([
+        getDoc(userRef),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Firestore timeout')), 5000)
+        )
+      ]);
+      
+      if (!userDoc.exists()) {
+        await setDoc(userRef, user);
+      } else {
+        await setDoc(userRef, {
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          email: user.email
+        }, { merge: true });
+      }
+    } catch (error) {
+      console.error('Firestore operation failed:', error);
+      throw error;
     }
   }
 
