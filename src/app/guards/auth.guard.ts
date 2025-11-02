@@ -1,16 +1,17 @@
 import { inject } from '@angular/core';
 import { CanActivateChildFn, CanActivateFn, Router } from '@angular/router';
 import { map, take } from 'rxjs/operators';
+import { Auth, authState } from '@angular/fire/auth';
 import { AuthService } from '../services/auth.service';
 
 export const authGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
   const router = inject(Router);
+  const auth = inject(Auth);
 
-  return authService.isAuthenticated().pipe(
+  return authState(auth).pipe(
     take(1),
-    map(isAuthenticated => {
-      if (!isAuthenticated) {
+    map(user => {
+      if (!user) {
         router.navigate(['/login']);
         return false;
       }
@@ -24,13 +25,13 @@ export const authChildGuard: CanActivateChildFn = (route, state) => {
 };
 
 export const redirectIfAuthenticatedGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
   const router = inject(Router);
+  const auth = inject(Auth);
 
-  return authService.isAuthenticated().pipe(
+  return authState(auth).pipe(
     take(1),
-    map(isAuthenticated => {
-      if (isAuthenticated) {
+    map(user => {
+      if (user) {
         router.navigate(['/tabs/home']);
         return false;
       }

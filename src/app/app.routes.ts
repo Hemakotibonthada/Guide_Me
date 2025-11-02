@@ -36,7 +36,7 @@ export const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: '/tabs/home',
+        redirectTo: 'home',
         pathMatch: 'full'
       }
     ]
